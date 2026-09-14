@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>سيطرة سيستم — منصة تسجيل الطلاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#0a0a0a; --panel:#151515; --panel2:#1b1b1b; --border:#2d2d2d;
+  --orange:#ff6a00; --orange2:#ff7a1a; --green:#21d36b; --red:#ff4040;
+  --text:#f4f4f4; --muted:#8c8c8c; --shadow:0 12px 35px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Cairo,Arial,sans-serif}
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+.app{max-width:1180px;margin:auto;min-height:100vh;border-left:1px solid #242424;border-right:1px solid #242424}
+header{height:126px;border-bottom:1px solid #292929;display:flex;align-items:center;justify-content:space-between;padding:24px 42px;gap:20px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:70px;height:70px;border-radius:16px;background:linear-gradient(145deg,#ff7b16,#f45b00);display:grid;place-items:center;box-shadow:0 8px 24px rgba(255,106,0,.18)}
+.logo-grid{display:grid;grid-template-columns:repeat(2,14px);gap:7px}
+.logo-grid i{display:block;width:14px;height:14px;border-radius:3px;background:#fff}
+.brand h1{margin:0;font-size:34px;font-weight:800;letter-spacing:-1px}
+.brand h1 span{color:var(--orange)}
+.date{color:#777;font-size:18px;white-space:nowrap}
+nav{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #292929;padding:0 34px}
+.nav-btn{height:78px;border:1px solid var(--border);border-top:none;background:#0d0d0d;color:#eee;font-size:22px;transition:.2s}
+.nav-btn:first-child{border-radius:0 0 18px 0}
+.nav-btn:last-child{border-radius:0 0 0 18px}
+.nav-btn:hover,.nav-btn.active{background:#181818;color:var(--orange);box-shadow:inset 0 -3px var(--orange)}
+main{padding:34px 34px 70px}
+.view{display:none}.view.active{display:block}
+.page-title{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 0 24px}
+.page-title h2{font-size:30px;margin:0 0 3px}.page-title p{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:30px 34px;min-height:170px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between}
+.stat .label{color:#9a9a9a;font-size:19px}.stat .value{font-size:43px;font-weight:800;line-height:1}.green{color:var(--green)}.orange{color:var(--orange)}.red{color:var(--red)}
+.section-title{font-size:25px;margin:38px 0 17px}
+.groups{display:grid;gap:18px}
+.group-card{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:26px 28px}
+.group-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.group-name{font-size:24px;font-weight:700}
+.badge{background:#271600;color:var(--orange);border:1px solid #573000;padding:6px 14px;border-radius:9px;font-size:15px}
+.progress{height:11px;background:#272727;border-radius:99px;overflow:hidden;margin:20px 0 15px}
+.progress i{display:block;height:100%;background:var(--green);border-radius:99px}
+.group-meta{display:flex;justify-content:space-between;color:#9c9c9c;font-size:16px}
+.group-meta b{color:#eee}.group-actions{display:flex;gap:10px;margin-top:18px}
+.btn{border:1px solid var(--border);background:#202020;color:#eee;border-radius:12px;padding:11px 17px;font-size:15px}
+.btn:hover{border-color:#555}.btn.primary{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:700}.btn.danger{color:#ff5b5b}.btn.small{padding:8px 12px;font-size:13px}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.input,.select{background:#111;border:1px solid #353535;color:#eee;border-radius:12px;padding:13px 15px;outline:none;font-size:15px}
+.input:focus,.select:focus{border-color:var(--orange)}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:20px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;min-width:750px}th,td{padding:16px 18px;text-align:right;border-bottom:1px solid #292929}th{color:#9c9c9c;font-weight:600;font-size:14px}td{font-size:15px}tr:last-child td{border-bottom:none}
+.status{padding:5px 10px;border-radius:8px;font-size:12px}.status.absent{background:#2b0909;color:#ff5959}.status.present{background:#062313;color:#39e878}
+.qr-layout{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:25px}
+.panel h3{margin:0 0 18px;font-size:22px}
+.form-row{display:grid;gap:8px;margin-bottom:15px}.form-row label{color:#aaa;font-size:14px}
+.qr-list{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.qr-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.qr-info h3{margin:0 0 7px}.qr-info p{margin:0;color:#888;font-size:13px}.qr-box{width:116px;height:116px;background:#fff;border-radius:10px;padding:8px;display:grid;place-items:center;flex:none}.qr-box img{max-width:100%;height:auto}
+
+.qr-generator-modal .modal-box{width:min(980px,100%);max-height:90vh;overflow:auto}
+.qr-generator-top{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:22px 0}
+.qr-generator-top .form-row{flex:1;min-width:180px;margin:0}
+.qr-generator-top .btn{height:48px}
+.generated-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.generated-qr-card{background:#101010;border:1px solid #303030;border-radius:16px;padding:14px;text-align:center}
+.generated-qr-card .mini-qr{width:145px;height:145px;background:#fff;border-radius:10px;padding:8px;margin:0 auto 10px;display:grid;place-items:center}
+.generated-qr-card .mini-qr img{max-width:100%;height:auto}
+.generated-qr-card .qr-number{font-weight:800;color:#eee;font-size:15px}
+.generated-qr-card .qr-id{font-size:11px;color:#777;margin:3px 0 10px;direction:ltr}
+.generated-qr-card .btn{width:100%;font-size:12px}
+.generator-empty{text-align:center;color:#777;padding:35px}
+.qr-counter{color:#999;font-size:13px}
+@media(max-width:900px){.generated-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.generated-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.generated-grid{grid-template-columns:1fr}.generated-qr-card .mini-qr{width:170px;height:170px}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;place-items:center;padding:20px;z-index:20}.modal.open{display:grid}
+.modal-box{width:min(560px,100%);background:#151515;border:1px solid #3a3a3a;border-radius:24px;padding:28px;box-shadow:0 25px 80px rgba(0,0,0,.55)}
+.modal-head{display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:24px}.close{border:0;background:#222;color:#aaa;border-radius:10px;width:38px;height:38px;font-size:20px}
+.big-qr{background:#fff;width:260px;height:260px;margin:24px auto;padding:14px;border-radius:14px;display:grid;place-items:center}.big-qr img{max-width:100%}
+.link-box{direction:ltr;text-align:left;background:#0d0d0d;border:1px solid #303030;border-radius:10px;padding:12px;color:#bbb;word-break:break-all;font-size:12px}
+.notice{padding:14px 16px;border-radius:12px;background:#1d140c;border:1px solid #4a2c0b;color:#d7a16e;margin-bottom:18px}
+.empty{text-align:center;padding:55px;color:#777}
+.toast{position:fixed;left:24px;bottom:24px;background:#222;border:1px solid #444;color:#fff;padding:13px 18px;border-radius:12px;transform:translateY(120px);opacity:0;transition:.25s;z-index:30}.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:850px){
+  html,body{width:100%;min-width:0;overflow-x:hidden}
+  body{background:#0a0a0a}
+  .app{width:100%;max-width:430px;min-height:100vh;margin:0 auto;border-left:1px solid #242424;border-right:1px solid #242424}
+  header{height:130px;padding:18px 20px;gap:12px}
+  .brand{gap:12px}
+  .brand h1{font-size:25px;letter-spacing:-.8px}
+  .logo{width:58px;height:58px;border-radius:14px}
+  .logo-grid{grid-template-columns:repeat(2,12px);gap:6px}
+  .logo-grid i{width:12px;height:12px}
+  .date{font-size:13px;white-space:nowrap}
+
+  nav{padding:0 8px;grid-template-columns:repeat(4,1fr);gap:2px}
+  .nav-btn{height:72px;font-size:15px;white-space:nowrap;padding:0 3px}
+  .nav-btn:first-child{border-radius:0 0 14px 0}
+  .nav-btn:last-child{border-radius:0 0 0 14px}
+
+  main{padding:24px 16px 48px}
+  .page-title{display:block;margin-bottom:20px}
+  .page-title h2{font-size:26px}
+  .page-title p{font-size:13px;line-height:1.8}
+  .page-title .btn{margin-top:12px;width:100%}
+
+  /* Two cards side-by-side exactly like the reference */
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .stat{min-height:145px;border-radius:20px;padding:22px 16px}
+  .stat .label{font-size:14px;line-height:1.7}
+  .stat .value{font-size:34px;line-height:1.15;direction:ltr;text-align:right}
+
+  .section-title{font-size:22px;margin:32px 0 14px}
+  .groups{grid-template-columns:1fr;gap:14px}
+  .group-card{border-radius:20px;padding:22px 18px}
+  .group-name{font-size:21px}
+  .badge{font-size:13px;padding:5px 11px}
+  .progress{height:10px;margin:17px 0 13px}
+  .group-meta{font-size:13px;gap:10px}
+  .group-actions{gap:8px;margin-top:15px}
+  .group-actions .btn{flex:1}
+
+  .toolbar{gap:8px}
+  .toolbar .input,.toolbar .select{width:100%}
+  .table-wrap{border-radius:16px}
+  table{min-width:680px}
+
+  .qr-layout{grid-template-columns:1fr}
+  .qr-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .qr-card{display:block;padding:14px;border-radius:17px}
+  .qr-card .qr-info h3{font-size:16px}
+  .qr-card .qr-info p{font-size:11px}
+  .qr-box{width:100px;height:100px;margin:12px auto 0}
+  .qr-card .btn{width:100%;font-size:12px}
+
+  .panel{border-radius:18px;padding:20px}
+  .input,.select{font-size:14px;padding:12px}
+  .modal{padding:12px}
+  .modal-box{border-radius:20px;padding:20px}
+  .qr-generator-modal .modal-box{max-height:92vh}
+  .generated-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .generated-qr-card{padding:10px;border-radius:14px}
+  .generated-qr-card .mini-qr{width:110px;height:110px;padding:6px}
+  .generated-qr-card .qr-number{font-size:12px}
+  .generated-qr-card .qr-id{font-size:9px}
+  .generated-qr-card .btn{font-size:10px;padding:7px 5px}
+
+  .qr-generator-top{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .qr-generator-top .form-row{min-width:0}
+  .qr-generator-top .btn{grid-column:1/-1;width:100%}
+}
+@media(max-width:520px){
+  .app{max-width:430px}
+  header{height:122px;padding:17px 18px}
+  .brand h1{font-size:23px}
+  .date{font-size:12px}
+  .logo{width:54px;height:54px}
+  nav{padding:0 6px}
+  .nav-btn{font-size:13px;height:66px}
+  main{padding:21px 14px 42px}
+  .grid{gap:10px}
+  .stat{min-height:138px;padding:20px 14px}
+  .stat .label{font-size:13px}
+  .stat .value{font-size:31px}
+  .group-card{padding:20px 16px}
+  .group-meta{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo"><div class="logo-grid"><i></i><i></i><i></i><i></i></div></div>
+    <h1>سيطرة <span>سيستم</span></h1>
+  </div>
+  <div class="date" id="today"></div>
+</header>
+
+<nav>
+  <button class="nav-btn active" data-view="dashboard">الدashboard</button>
+  <button class="nav-btn" data-view="qrs">QR Codes</button>
+  <button class="nav-btn" data-view="absent">الغائبين</button>
+  <button class="nav-btn" data-view="register">تسجيل طالب</button>
+</nav>
+
+<main>
+<section id="dashboard" class="view active">
+  <div class="page-title">
+    <div><h2>لوحة التحكم</h2><p>ملخص سريع لحالة الطلاب والمجموعات اليوم</p></div>
+    <button class="btn primary" onclick="showView('register')">+ تسجيل طالب جديد</button>
+  </div>
+  <div class="grid">
+    <div class="stat"><div class="label">إجمالي الطلاب</div><div class="value green" id="totalStudents">3,200</div></div>
+    <div class="stat"><div class="label">غائبين النهاردة</div><div class="value red" id="totalAbsent">47</div></div>
+    <div class="stat"><div class="label">المجموعات</div><div class="value">8</div></div>
+    <div class="stat"><div class="label">نسبة الحضور</div><div class="value orange" id="attendance">98.5%</div></div>
+  </div>
+  <h2 class="section-title">المجموعات</h2>
+  <div class="groups" id="dashboardGroups"></div>
+</section>
+
+<section id="qrs" class="view">
+  <div class="page-title">
+    <div><h2>QR Codes</h2><p>كل مجموعة لها QR خاص بها، والطالب يدخل منه على نموذج التسجيل.</p></div>
+    <button class="btn primary" onclick="openUnlimitedQrGenerator()">+ توليد QR Codes</button>
+  </div>
+  <div class="notice">الـ QR هنا عبارة عن ID مستقل للكارت فقط، وليس مرتبطًا بمجموعة. عند Scan يفتح نموذج تسجيل الطالب، ومن بيانات الطالب يتم تحديد المجموعة.</div>
+  <div class="qr-list" id="qrList"></div>
+</section>
+
+<section id="absent" class="view">
+  <div class="page-title">
+    <div><h2>الغائبين</h2><p>قائمة الغياب مع رقم ولي الأمر للمتابعة السريعة.</p></div>
+  </div>
+  <div class="toolbar">
+    <input class="input" id="absentSearch" placeholder="ابحث باسم الطالب أو رقم ولي الأمر..." oninput="renderAbsent()">
+    <select class="select" id="absentGroup" onchange="renderAbsent()"><option value="">كل المجموعات</option></select>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>الطالب</th><th>المجموعة</th><th>رقم الطالب</th><th>ولي الأمر</th><th>الحالة</th><th>إجراء</th></tr></thead>
+    <tbody id="absentTable"></tbody></table>
+  </div>
+</section>
+
+<section id="register" class="view">
+  <div class="page-title">
+    <div><h2>تسجيل طالب</h2><p id="registerSubtitle">أدخل بيانات الطالب وسيتم إضافته للمجموعة.</p></div>
+  </div>
+  <div class="panel" style="max-width:760px;margin:auto">
+    <form id="registerForm">
+      <div class="form-row"><label>اسم الطالب</label><input class="input" id="studentName" required placeholder="مثال: أحمد محمد علي"></div>
+      <div class="form-row"><label>رقم الطالب</label><input class="input" id="studentPhone" required inputmode="numeric" placeholder="01xxxxxxxxx"></div>
+      <div class="form-row"><label>رقم ولي الأمر</label><input class="input" id="parentPhone" required inputmode="numeric" placeholder="01xxxxxxxxx"></div>
+      <div class="form-row"><label>مجموعة الطالب</label><select class="select" id="studentGroup"></select></div>
+      <div class="form-row"><label>حالة التسجيل</label><select class="select" id="studentStatus"><option value="present">حاضر</option><option value="absent">غائب</option></select></div>
+      <button class="btn primary" style="width:100%;padding:14px" type="submit">حفظ بيانات الطالب</button>
+    </form>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="modalTitle">QR Code</h3><button class="close" onclick="closeModal()">×</button></div>
+    <div class="big-qr" id="bigQr"></div>
+    <div class="link-box" id="qrLink"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+      <button class="btn primary" onclick="copyQrLink()">نسخ رابط التسجيل</button>
+      <button class="btn" onclick="openDemoRegistration()">فتح صفحة التسجيل</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal qr-generator-modal" id="unlimitedQrModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>مولّد QR Codes</h3>
+        <div class="qr-counter" id="generatedCounter">جاهز للتوليد</div>
+      </div>
+      <button class="close" onclick="closeUnlimitedQrGenerator()">×</button>
+    </div>
+
+    <div class="notice" style="margin-top:20px">
+      كل QR Code هنا مستقل ومالوش علاقة بمجموعة معينة. الكارت بيتطبع ويتوزع للطالب، وبعد الـScan يتم تسجيل بيانات الطالب وتحديد المجموعة من بيانات التسجيل.
+      تقدر تولّد أي عدد من الأكواد بدون حد عملي داخل الديمو.
+    </div>
+
+    <div class="qr-generator-top">
+      <div class="form-row">
+        <label>عدد الـ QR Codes</label>
+        <input class="input" id="qrGenerateCount" type="number" min="1" value="12" placeholder="مثال: 50">
+      </div>
+      <button class="btn primary" onclick="generateUnlimitedQrs()">توليد الأكواد</button>
+    </div>
+
+    <div id="generatedQrGrid" class="generated-grid">
+      <div class="generator-empty" style="grid-column:1/-1">اختار العدد والمجموعة واضغط «توليد الأكواد».</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="creatorModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>إنشاء QR Code</h3><button class="close" onclick="closeCreator()">×</button></div>
+    <div class="form-row" style="margin-top:22px"><label>اسم المجموعة</label><input class="input" id="newGroupName" placeholder="مثال: المجموعة ج"></div>
+    <div class="form-row"><label>اليوم</label><select class="select" id="newGroupDay"><option>الأحد</option><option>الإثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option><option>الجمعة</option><option>السبت</option></select></div>
+    <button class="btn primary" style="width:100%" onclick="createQr()">إنشاء الكود</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const groups = [
+ {id:'A',name:'المجموعة أ',day:'الأحد',total:1000,present:990,absent:10},
+ {id:'B',name:'المجموعة ب',day:'الإثنين',total:520,present:505,absent:15},
+ {id:'C',name:'المجموعة ج',day:'الثلاثاء',total:430,present:425,absent:5},
+ {id:'D',name:'المجموعة د',day:'الأربعاء',total:380,present:375,absent:5},
+ {id:'E',name:'المجموعة هـ',day:'الخميس',total:300,present:294,absent:6},
+ {id:'F',name:'المجموعة و',day:'السبت',total:240,present:235,absent:5},
+ {id:'G',name:'المجموعة ز',day:'الأحد',total:180,present:178,absent:2},
+ {id:'H',name:'المجموعة ح',day:'الإثنين',total:150,present:145,absent:5}
+];
+
+let students = [
+ {id:1,name:'أحمد محمد علي',phone:'01012345678',parent:'01123456789',group:'A',status:'absent'},
+ {id:2,name:'يوسف محمود',phone:'01022334455',parent:'01099887766',group:'A',status:'absent'},
+ {id:3,name:'عمر خالد حسن',phone:'01122334455',parent:'01234567890',group:'A',status:'absent'},
+ {id:4,name:'محمد إيهاب',phone:'01055556666',parent:'01155557777',group:'A',status:'absent'},
+ {id:5,name:'عبدالله سامح',phone:'01211112222',parent:'01011112222',group:'A',status:'absent'},
+ {id:6,name:'سيف الدين',phone:'01177778888',parent:'01277778888',group:'A',status:'absent'},
+ {id:7,name:'كريم أشرف',phone:'01044445555',parent:'01144445555',group:'A',status:'absent'},
+ {id:8,name:'زياد تامر',phone:'01233334444',parent:'01033334444',group:'A',status:'absent'},
+ {id:9,name:'مروان وليد',phone:'01166667777',parent:'01266667777',group:'A',status:'absent'},
+ {id:10,name:'إسلام حسام',phone:'01088889999',parent:'01188889999',group:'A',status:'absent'}
+];
+let currentQrLink='';
+
+function setDate(){
+ const d=new Date();
+ const days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+ const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+ document.getElementById('today').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+function showView(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+ if(id==='absent') renderAbsent();
+ if(id==='qrs') renderQrs();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+
+function renderDashboard(){
+ const total=groups.reduce((s,g)=>s+g.total,0);
+ const absent=groups.reduce((s,g)=>s+g.absent,0);
+ document.getElementById('totalStudents').textContent=total.toLocaleString('en-US');
+ document.getElementById('totalAbsent').textContent=absent.toLocaleString('en-US');
+ document.getElementById('attendance').textContent=((1-absent/total)*100).toFixed(1)+'%';
+ document.getElementById('dashboardGroups').innerHTML=groups.map(g=>{
+   const pct=(g.present/g.total*100).toFixed(1);
+   return `<div class="group-card">
+     <div class="group-head"><div class="group-name">${g.name}</div><div class="badge">${g.day}</div></div>
+     <div class="progress"><i style="width:${pct}%"></i></div>
+     <div class="group-meta"><span>حضور <b>${g.present.toLocaleString('en-US')}</b></span><span>غياب <b style="color:#ff5050">${g.absent}</b></span><span>الإجمالي <b>${g.total.toLocaleString('en-US')}</b></span></div>
+     <div class="group-actions"><button class="btn small" onclick="showGroupAbsent('${g.id}')">عرض الغائبين</button><button class="btn small primary" onclick="showQr('${g.id}')">عرض QR</button></div>
+   </div>`;
+ }).join('');
+}
+
+function qrUrl(id){
+ return `${location.href.split('#')[0]}#register?group=${encodeURIComponent(id)}`;
+}
+function renderQrs(){
+ document.getElementById('qrList').innerHTML=groups.map(g=>{
+   const boxId='qr-'+g.id;
+   setTimeout(()=>new QRCode(document.getElementById(boxId),{text:qrUrl(g.id),width:100,height:100,colorDark:'#111111',colorLight:'#ffffff'}),0);
+   return `<div class="qr-card"><div class="qr-info"><h3>${g.name}</h3><p>${g.day} • ${g.total.toLocaleString('en-US')} طالب</p><div style="margin-top:14px"><button class="btn small primary" onclick="showQr('${g.id}')">تكبير QR</button></div></div><div class="qr-box" id="${boxId}"></div></div>`;
+ }).join('');
+}
+function showQr(id){
+ const g=groups.find(x=>x.id===id); if(!g)return;
+ currentQrLink=qrUrl(id);
+ document.getElementById('modalTitle').textContent=`QR — ${g.name}`;
+ document.getElementById('qrLink').textContent=currentQrLink;
+ const holder=document.getElementById('bigQr'); holder.innerHTML='';
+ new QRCode(holder,{text:currentQrLink,width:230,height:230,colorDark:'#111111',colorLight:'#ffffff'});
+ document.getElementById('qrModal').classList.add('open');
+}
+function closeModal(){document.getElementById('qrModal').classList.remove('open')}
+async function copyQrLink(){
+ try{await navigator.clipboard.writeText(currentQrLink);toast('تم نسخ رابط التسجيل');}
+ catch(e){toast('انسخ الرابط يدويًا من الصندوق');}
+}
+function openDemoRegistration(){closeModal();showView('register');document.getElementById('registerSubtitle').textContent='تم فتح نموذج التسجيل من كارت QR — املأ بيانات الطالب، ثم حدد المجموعة من بيانات التسجيل.';}
+
+let generatedQrSerial = 0;
+
+function openUnlimitedQrGenerator(){
+  document.getElementById('unlimitedQrModal').classList.add('open');
+}
+
+function closeUnlimitedQrGenerator(){
+  document.getElementById('unlimitedQrModal').classList.remove('open');
+}
+
+function renderQrGeneratorGroups(){
+  const select = document.getElementById('qrGenerateGroup');
+  select.innerHTML = groups.map(g =>
+    `<option value="${g.id}">${g.name} — ${g.day}</option>`
+  ).join('');
+}
+
+function makeStudentRegistrationUrl(qrId){
+  const base = location.href.split('#')[0];
+  return `${base}#register?qr=${encodeURIComponent(qrId)}`;
+}
+
+function generateUnlimitedQrs(){
+  const count = Math.max(1, Math.floor(Number(document.getElementById('qrGenerateCount').value) || 1));
+  const grid = document.getElementById('generatedQrGrid');
+
+  // Each physical card gets a unique neutral QR ID.
+  let htmlCards = '';
+  const serials = [];
+  for(let i=0; i<count; i++){
+    generatedQrSerial++;
+    serials.push(generatedQrSerial);
+    const qrId = `CARD-${Date.now().toString(36).toUpperCase()}-${generatedQrSerial}`;
+    const holderId = `generated-${generatedQrSerial}`;
+    const url = makeStudentRegistrationUrl(qrId);
+
+    htmlCards += `
+      <div class="generated-qr-card">
+        <div class="mini-qr" id="${holderId}"></div>
+        <div class="qr-number">CARD #${generatedQrSerial}</div>
+        <div class="qr-id">${qrId}</div>
+        <button class="btn primary" onclick="openGeneratedQr('${escapeAttr(url)}','${escapeAttr(qrId)}','كارت تسجيل طالب')">فتح / تكبير</button>
+      </div>`;
+  }
+
+  grid.innerHTML = htmlCards;
+  document.getElementById('generatedCounter').textContent =
+    `تم توليد ${count.toLocaleString('en-US')} QR جديد — إجمالي مولّد في هذه الجلسة: ${generatedQrSerial.toLocaleString('en-US')}`;
+
+  for(const serial of serials){
+    const id = `generated-${serial}`;
+    const card = document.getElementById(id).closest('.generated-qr-card');
+    const qrId = card.querySelector('.qr-id').textContent;
+    new QRCode(document.getElementById(id), {
+      text: makeStudentRegistrationUrl(qrId),
+      width: 125,
+      height: 125,
+      colorDark: '#111111',
+      colorLight: '#ffffff'
+    });
+  }
+  toast(`تم توليد ${count.toLocaleString('en-US')} QR Code للكروت`);
+}
+
+function escapeAttr(value){
+  return String(value).replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+}
+
+function openGeneratedQr(url, qrId, groupName){
+  currentQrLink = url;
+  document.getElementById('modalTitle').textContent = `${groupName} — ${qrId}`;
+  document.getElementById('qrLink').textContent = url;
+  const holder = document.getElementById('bigQr');
+  holder.innerHTML = '';
+  new QRCode(holder, {
+    text: url,
+    width: 230,
+    height: 230,
+    colorDark: '#111111',
+    colorLight: '#ffffff'
+  });
+  document.getElementById('qrModal').classList.add('open');
+}
+
+function openQrCreator(){document.getElementById('creatorModal').classList.add('open')}
+function closeCreator(){document.getElementById('creatorModal').classList.remove('open')}
+function createQr(){
+ const name=document.getElementById('newGroupName').value.trim();
+ const day=document.getElementById('newGroupDay').value;
+ if(!name){toast('اكتب اسم المجموعة أولاً');return}
+ const id=String.fromCharCode(65+groups.length);
+ groups.push({id,name,day,total:0,present:0,absent:0});
+ closeCreator();document.getElementById('newGroupName').value='';
+ renderDashboard();renderGroupOptions();showView('qrs');toast('تم إنشاء QR للمجموعة الجديدة');
+}
+function renderGroupOptions(){
+ const opts=groups.map(g=>`<option value="${g.id}">${g.name} — ${g.day}</option>`).join('');
+ document.getElementById('studentGroup').innerHTML=opts;
+ document.getElementById('absentGroup').innerHTML='<option value="">كل المجموعات</option>'+opts;
+}
+function renderAbsent(){
+ const q=document.getElementById('absentSearch').value.trim().toLowerCase();
+ const gid=document.getElementById('absentGroup').value;
+ const rows=students.filter(s=>s.status==='absent' && (!gid||s.group===gid) &&
+   (!q||s.name.toLowerCase().includes(q)||s.parent.includes(q)));
+ const tbody=document.getElementById('absentTable');
+ if(!rows.length){tbody.innerHTML='<tr><td colspan="6" class="empty">لا يوجد غياب مطابق للبحث</td></tr>';return}
+ tbody.innerHTML=rows.map(s=>{
+   const g=groups.find(x=>x.id===s.group);
+   return `<tr><td><b>${s.name}</b></td><td>${g?g.name:'-'}</td><td>${s.phone}</td><td>${s.parent}</td><td><span class="status absent">غائب</span></td><td><button class="btn small" onclick="markPresent(${s.id})">تسجيل حضور</button></td></tr>`;
+ }).join('');
+}
+function markPresent(id){
+ const s=students.find(x=>x.id===id); if(!s)return;
+ s.status='present';
+ const g=groups.find(x=>x.id===s.group); if(g && g.absent>0){g.absent--;g.present++;}
+ renderAbsent();renderDashboard();toast(`تم تسجيل حضور ${s.name}`);
+}
+function showGroupAbsent(id){
+ document.getElementById('absentGroup').value=id;showView('absent');renderAbsent();
+}
+document.getElementById('registerForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=document.getElementById('studentName').value.trim();
+ const phone=document.getElementById('studentPhone').value.trim();
+ const parent=document.getElementById('parentPhone').value.trim();
+ const groupId=document.getElementById('studentGroup').value;
+ const status=document.getElementById('studentStatus').value;
+ const qrMatch=location.hash.match(/qr=([^&]+)/);
+ const qrSource=qrMatch ? decodeURIComponent(qrMatch[1]) : '';
+ const g=groups.find(x=>x.id===groupId);
+ students.push({id:Date.now(),name,phone,parent,group:groupId,status,qrSource});
+ if(g){g.total++;if(status==='present')g.present++;else g.absent++;}
+ e.target.reset();renderDashboard();renderGroupOptions();
+ toast('تم حفظ بيانات الطالب بنجاح');
+});
+function toast(msg){
+ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+ clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2500);
+}
+function handleHash(){
+ const hash=location.hash;
+ if(hash.startsWith('#register')){
+   showView('register');
+   const qr=hash.match(/qr=([^&]+)/);
+   document.getElementById('registerSubtitle').textContent =
+     qr ? `كارت QR: ${decodeURIComponent(qr[1])} — املأ بيانات الطالب وحدد المجموعة من بياناته.` :
+          'أدخل بيانات الطالب، ثم حدد المجموعة.';
+ }
+}
+setDate();renderGroupOptions();renderDashboard();renderQrs();handleHash();
+window.addEventListener('hashchange',handleHash);
+</script>
+</body>
+</html>
